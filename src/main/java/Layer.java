@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Shelf {
+public class Layer {
     int remainLength;
     List<Item> layer;
 
-    public Shelf(int shelfLength) {
+    public Layer(int shelfLength) {
         this.remainLength = shelfLength;
         this.layer = new ArrayList<>();
     }

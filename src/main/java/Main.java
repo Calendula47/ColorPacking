@@ -11,27 +11,12 @@ public class Main {
             items = InputReader.readItemsFromFile("input.csv");
 
             // 使用贪心算法求解
-            List<List<Item>> resultGreedy = GreedyAlgorithmSolver.solve(shelfLength, items);
-            System.out.println("Greedy Algorithm Result:");
+            List<Layer> resultGreedy = GreedyAlgorithmSolver.solve(shelfLength, items);
+            System.out.println("贪心算法：");
             ResultPrinter.printResult(resultGreedy, shelfLength);
 
-            // 使用遗传算法求解
-            List<List<Item>> resultGA = GeneticAlgorithmSolver.solve(shelfLength, items);
-            System.out.println("Genetic Algorithm Result:");
-            ResultPrinter.printResult(resultGA, shelfLength);
-
-            // 使用粒子群算法求解
-            List<List<Item>> resultPSO = ParticleSwarmSolver.solve(shelfLength, items);
-            System.out.println("Particle Swarm Algorithm Result:");
-            ResultPrinter.printResult(resultPSO, shelfLength);
-
-            // 使用模拟退火算法求解
-            List<List<Item>> resultSA = SimulatedAnnealingSolver.solve(shelfLength, items);
-            System.out.println("Simulated Annealing Algorithm Result:");
-            ResultPrinter.printResult(resultSA, shelfLength);
-
         } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
+            System.err.println("无法读取文件：" + e.getMessage());
         }
     }
 }

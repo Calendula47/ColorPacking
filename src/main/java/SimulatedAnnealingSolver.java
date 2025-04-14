@@ -90,7 +90,7 @@ public class SimulatedAnnealingSolver {
             Item item = items.get(index);
             boolean placed = false;
             for (List<Item> layer : result) {
-                Shelf currentLayer = new Shelf(shelfLength);
+                Layer currentLayer = new Layer(shelfLength);
                 currentLayer.getLayer().addAll(layer);
                 currentLayer.remainLength = shelfLength - layer.stream().mapToInt(Item::getLength).sum();
                 if (currentLayer.addItem(item)) {
@@ -99,7 +99,7 @@ public class SimulatedAnnealingSolver {
                 }
             }
             if (!placed) {
-                Shelf newLayer = new Shelf(shelfLength);
+                Layer newLayer = new Layer(shelfLength);
                 newLayer.addItem(item);
                 result.add(newLayer.getLayer());
             }

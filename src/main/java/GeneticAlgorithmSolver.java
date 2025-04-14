@@ -173,7 +173,7 @@ public class GeneticAlgorithmSolver {
             Item item = items.get(index);
             boolean placed = false;
             for (List<Item> layer : solution) {
-                Shelf currentLayer = new Shelf(shelfLength);
+                Layer currentLayer = new Layer(shelfLength);
                 currentLayer.getLayer().addAll(layer);
                 currentLayer.remainLength = shelfLength - layer.stream().mapToInt(Item::getLength).sum();
                 if (currentLayer.addItem(item)) {
@@ -182,7 +182,7 @@ public class GeneticAlgorithmSolver {
                 }
             }
             if (!placed) {
-                Shelf newLayer = new Shelf(shelfLength);
+                Layer newLayer = new Layer(shelfLength);
                 newLayer.addItem(item);
                 solution.add(newLayer.getLayer());
             }

@@ -1,13 +1,13 @@
 import java.util.List;
 
 public class ResultPrinter {
-    public static void printResult(List<List<Item>> result, int shelfLength) {
+    public static void printResult(List<Layer> result, int shelfLength) {
         int totalUsedLength = 0;
         int layerCount = result.size();
 
         // 输出各层使用情况
         for (int i = 0; i < layerCount; i++) {
-            List<Item> layer = result.get(i);
+            List<Item> layer = result.get(i).getLayer();
             int usedLength = 0;
             for (Item item : layer) {
                 usedLength += item.getLength();
