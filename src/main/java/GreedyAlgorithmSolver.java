@@ -4,11 +4,12 @@ import java.util.List;
 
 // 贪心算法求解器
 public class GreedyAlgorithmSolver {
-    public static List<Layer> solve(int shelfLength, List<Item> items) {
+    public static Shelf solve(int shelfLength, List<Item> items) {
         List<Item> sortedItems = new ArrayList<>(items);
         sortedItems.sort(Comparator.comparingInt(Item::getLength).reversed());
 
-        List<Layer> shelf = new ArrayList<>();
+        Shelf result = new Shelf();
+        List<Layer> shelf = result.getShelf();
         for (Item item : sortedItems) {
             boolean placed = false;
             for (Layer layer : shelf) {
@@ -18,13 +19,12 @@ public class GreedyAlgorithmSolver {
                 }
             }
             if (!placed) {
-                Layer newLayer = new Layer(shelfLength);
-                newLayer.addItem(item);
-                shelf.add(newLayer);
+                result.addLayer(shelfLength, new Layer(shelfLength));
+                shelf.get(shelf.size() - 1).addItem(item);
             }
         }
 
-        return shelf;
+        return result;
 
     }
-}    
+}

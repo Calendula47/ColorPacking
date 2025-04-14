@@ -27,14 +27,14 @@ class Particle {
 public class ParticleSwarmSolver {
     private static final int PARTICLE_COUNT = 50;
     private static final int ITERATIONS = 300;
-    private static final double W = 0.7;
-    private static final double C1 = 1.4;
-    private static final double C2 = 1.4;
+    private static final double W = 0.7; // 惯性
+    private static final double C1 = 1.4; // 个体加速度
+    private static final double C2 = 1.4; // 群体加速度
 
-    public static List<List<Item>> solve(int shelfLength, List<Item> items) {
+    public static Shelf solve(int shelfLength, List<Item> items) {
         List<Particle> particles = initializeParticles(items.size());
         List<Integer> globalBestPosition = null;
-        double globalBestFitness = Double.MAX_VALUE;
+        double globalBestFitness = 0;
 
         for (int iteration = 0; iteration < ITERATIONS; iteration++) {
             for (Particle particle : particles) {
@@ -42,7 +42,7 @@ public class ParticleSwarmSolver {
                 if (fitness < particle.personalBestFitness) {
                     particle.personalBestFitness = fitness;
                     particle.personalBestPosition = new ArrayList<>(particle.position);
-                    if (fitness < globalBestFitness) {
+                    if (fitness > globalBestFitness) {
                         globalBestFitness = fitness;
                         globalBestPosition = new ArrayList<>(particle.position);
                     }
@@ -67,18 +67,18 @@ public class ParticleSwarmSolver {
     }
 
     private static double calculateFitness(List<Integer> position, int shelfLength, List<Item> items) {
-        List<List<Item>> solution = decodeSolution(position, shelfLength, items);
-        return solution.size();
+        Shelf solution = decodeSolution(position, shelfLength, items);
+        return solution.getUsage();
     }
 
     private static void updateVelocity(Particle particle, List<Integer> globalBestPosition) {
         Random random = new Random();
         for (int i = 0; i < particle.position.size(); i++) {
-            double r1 = random.nextDouble();
-            double r2 = random.nextDouble();
-            int cognitiveComponent = (int) (C1 * r1 * (particle.personalBestPosition.get(i) - particle.position.get(i)));
-            int socialComponent = (int) (C2 * r2 * (globalBestPosition.get(i) - particle.position.get(i)));
-            particle.velocity.set(i, (int) (W * particle.velocity.get(i) + cognitiveComponent + socialComponent));
+            double r1 = random.nextDouble(); // 个体加速率
+            double r2 = random.nextDouble(); // 群体加速率
+            int personalAcceleration = (int) (C1 * r1 * (particle.personalBestPosition.get(i) - particle.position.get(i)));
+            int socialAcceleration = (int) (C2 * r2 * (globalBestPosition.get(i) - particle.position.get(i)));
+            particle.velocity.set(i, (int) (W * particle.velocity.get(i) + personalAcceleration + socialAcceleration));
         }
     }
 
@@ -92,8 +92,10 @@ public class ParticleSwarmSolver {
             }
             particle.position.set(i, newPosition);
         }
-        // 处理重复元素
+
+        // 处理重复数据
         boolean[] used = new boolean[particle.position.size()];
+        // 删去重复数据
         List<Integer> newPosition = new ArrayList<>(Collections.nCopies(particle.position.size(), -1));
         for (int i = 0; i < particle.position.size(); i++) {
             int index = particle.position.get(i);
@@ -102,40 +104,42 @@ public class ParticleSwarmSolver {
                 used[index] = true;
             }
         }
+        // 收集空位并打乱
+        List<Integer> unusedIndexes = new ArrayList<>();
+        for (int index = 0; index < used.length; index++) {
+            if (!used[index]) {
+                unusedIndexes.add(index);
+            }
+        }
+        Collections.shuffle(unusedIndexes);
+        // 填充空位
+        int fillIndex =0;
         for (int i = 0; i < newPosition.size(); i++) {
-            if (newPosition.get(i) == -1) {
-                for (int j = 0; j < used.length; j++) {
-                    if (!used[j]) {
-                        newPosition.set(i, j);
-                        used[j] = true;
-                        break;
-                    }
-                }
+            if (newPosition.get(i) == -1 && fillIndex < unusedIndexes.size()) {
+                newPosition.set(i, unusedIndexes.get(fillIndex));
+                fillIndex++;
             }
         }
         particle.position = newPosition;
     }
 
-    private static List<List<Item>> decodeSolution(List<Integer> position, int shelfLength, List<Item> items) {
-        List<List<Item>> solution = new ArrayList<>();
+    private static Shelf decodeSolution(List<Integer> position, int shelfLength, List<Item> items) {
+        Shelf result = new Shelf();
+        List<Layer> shelf = result.getShelf();
         for (int index : position) {
             Item item = items.get(index);
             boolean placed = false;
-            for (List<Item> layer : solution) {
-                Layer currentLayer = new Layer(shelfLength);
-                currentLayer.getLayer().addAll(layer);
-                currentLayer.remainLength = shelfLength - layer.stream().mapToInt(Item::getLength).sum();
-                if (currentLayer.addItem(item)) {
+            for (Layer layer : shelf) {
+                if (layer.addItem(item)) {
                     placed = true;
                     break;
                 }
             }
             if (!placed) {
-                Layer newLayer = new Layer(shelfLength);
-                newLayer.addItem(item);
-                solution.add(newLayer.getLayer());
+                result.addLayer(shelfLength, new Layer(shelfLength));
+                shelf.get(shelf.size() - 1).addItem(item);
             }
         }
-        return solution;
+        return result;
     }
 }    

@@ -167,26 +167,23 @@ public class GeneticAlgorithmSolver {
         return bestIndex;
     }
 
-    private static List<List<Item>> decodeSolution(List<Integer> individual, int shelfLength, List<Item> items) {
-        List<List<Item>> solution = new ArrayList<>();
-        for (int index : individual) {
+    private static Shelf decodeSolution(List<Integer> solution, int shelfLength, List<Item> items) {
+        Shelf result = new Shelf();
+        List<Layer> shelf = result.getShelf();
+        for (int index : solution) {
             Item item = items.get(index);
             boolean placed = false;
-            for (List<Item> layer : solution) {
-                Layer currentLayer = new Layer(shelfLength);
-                currentLayer.getLayer().addAll(layer);
-                currentLayer.remainLength = shelfLength - layer.stream().mapToInt(Item::getLength).sum();
-                if (currentLayer.addItem(item)) {
+            for (Layer layer : shelf) {
+                if (layer.addItem(item)) {
                     placed = true;
                     break;
                 }
             }
             if (!placed) {
-                Layer newLayer = new Layer(shelfLength);
-                newLayer.addItem(item);
-                solution.add(newLayer.getLayer());
+                result.addLayer(shelfLength, new Layer(shelfLength));
+                shelf.get(shelf.size() - 1).addItem(item);
             }
         }
-        return solution;
+        return result;
     }
 }
