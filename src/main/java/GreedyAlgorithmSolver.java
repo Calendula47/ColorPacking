@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -13,18 +12,18 @@ public class GreedyAlgorithmSolver {
         for (Item item : sortedItems) {
             boolean placed = false;
             for (List<Item> layer : result) {
-                ShelfLayer currentLayer = new ShelfLayer(shelfLength);
-                currentLayer.getItems().addAll(layer);
-                currentLayer.remainingLength = shelfLength - layer.stream().mapToInt(Item::getLength).sum();
+                Shelf currentLayer = new Shelf(shelfLength);
+                currentLayer.getLayer().addAll(layer);
+                currentLayer.remainLength = shelfLength - layer.stream().mapToInt(Item::getLength).sum();
                 if (currentLayer.addItem(item)) {
                     placed = true;
                     break;
                 }
             }
             if (!placed) {
-                ShelfLayer newLayer = new ShelfLayer(shelfLength);
+                Shelf newLayer = new Shelf(shelfLength);
                 newLayer.addItem(item);
-                result.add(newLayer.getItems());
+                result.add(newLayer.getLayer());
             }
         }
         return result;

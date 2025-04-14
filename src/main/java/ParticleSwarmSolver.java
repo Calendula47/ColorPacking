@@ -122,18 +122,18 @@ public class ParticleSwarmSolver {
             Item item = items.get(index);
             boolean placed = false;
             for (List<Item> layer : solution) {
-                ShelfLayer currentLayer = new ShelfLayer(shelfLength);
-                currentLayer.getItems().addAll(layer);
-                currentLayer.remainingLength = shelfLength - layer.stream().mapToInt(Item::getLength).sum();
+                Shelf currentLayer = new Shelf(shelfLength);
+                currentLayer.getLayer().addAll(layer);
+                currentLayer.remainLength = shelfLength - layer.stream().mapToInt(Item::getLength).sum();
                 if (currentLayer.addItem(item)) {
                     placed = true;
                     break;
                 }
             }
             if (!placed) {
-                ShelfLayer newLayer = new ShelfLayer(shelfLength);
+                Shelf newLayer = new Shelf(shelfLength);
                 newLayer.addItem(item);
-                solution.add(newLayer.getItems());
+                solution.add(newLayer.getLayer());
             }
         }
         return solution;

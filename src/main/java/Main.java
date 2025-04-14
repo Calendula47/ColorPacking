@@ -8,7 +8,7 @@ public class Main {
         List<Item> items;
         try {
             // 从文件中读取货物信息
-            items = FileInputReader.readItemsFromFile("input.csv");
+            items = InputReader.readItemsFromFile("input.csv");
 
             // 使用贪心算法求解
             List<List<Item>> resultGreedy = GreedyAlgorithmSolver.solve(shelfLength, items);

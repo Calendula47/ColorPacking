@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// 接受文件输入的方法
-public class FileInputReader {
+public class InputReader {
     public static List<Item> readItemsFromFile(String filePath) throws IOException {
         List<Item> items = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -15,9 +14,16 @@ public class FileInputReader {
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
                 if (values.length >= 2) {
-                    int length = Integer.parseInt(values[0]);
-                    int color = Integer.parseInt(values[1]);
-                    items.add(new Item(length, color));
+                    int length = 0;
+                    int color = 0;
+                    try {
+                        length = Integer.parseInt(values[0]);
+                        color = Integer.parseInt(values[1]);
+                        items.add(new Item(length, color));
+                    } catch (NumberFormatException e) {
+                        System.err.println("Invalid data format in line: " + line);
+                        ;
+                    }
                 }
             }
         }
