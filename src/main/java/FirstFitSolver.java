@@ -1,16 +1,12 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
-// 贪心算法求解器
-public class GreedyAlgorithmSolver {
+public class FirstFitSolver {
     public static Shelf solve(int shelfLength, List<Item> items) {
-        List<Item> sortedItems = new ArrayList<>(items);
-        sortedItems.sort(Comparator.comparingInt(Item::getLength).reversed());
-
+        List<Item> fitItems = new ArrayList<>(items);
         Shelf result = new Shelf();
         List<Layer> shelf = result.getShelf();
-        for (Item item : sortedItems) {
+        for (Item item : fitItems) {
             boolean placed = false;
             for (Layer layer : shelf) {
                 if (layer.addItem(item)) {

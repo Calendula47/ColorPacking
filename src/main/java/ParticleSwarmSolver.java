@@ -3,7 +3,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-// 粒子类
 class Particle {
     List<Integer> position;
     List<Integer> velocity;
@@ -30,6 +29,7 @@ public class ParticleSwarmSolver {
     private static final double W = 0.7; // 惯性
     private static final double C1 = 1.4; // 个体加速度
     private static final double C2 = 1.4; // 群体加速度
+    private static List<Double> fitnessLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         List<Particle> particles = initializeParticles(items.size());
@@ -37,9 +37,11 @@ public class ParticleSwarmSolver {
         double globalBestFitness = 0;
 
         for (int iteration = 0; iteration < ITERATIONS; iteration++) {
+            double totalFitness = 0;
             for (Particle particle : particles) {
                 double fitness = calculateFitness(particle.position, shelfLength, items);
-                if (fitness < particle.personalBestFitness) {
+                totalFitness += fitness;
+                if (fitness > particle.personalBestFitness) {
                     particle.personalBestFitness = fitness;
                     particle.personalBestPosition = new ArrayList<>(particle.position);
                     if (fitness > globalBestFitness) {
@@ -47,15 +49,14 @@ public class ParticleSwarmSolver {
                         globalBestPosition = new ArrayList<>(particle.position);
                     }
                 }
-            }
-
+            } // 检查是否为个体和群体更优解
             for (Particle particle : particles) {
                 updateVelocity(particle, globalBestPosition);
                 updatePosition(particle);
-            }
+            } // 向最优解更新速度
+            fitnessLog.add(totalFitness / PARTICLE_COUNT);
         }
-
-        return decodeSolution(globalBestPosition, shelfLength, items);
+        return SolutionDecoder.decode(globalBestPosition, shelfLength, items);
     }
 
     private static List<Particle> initializeParticles(int itemCount) {
@@ -67,7 +68,7 @@ public class ParticleSwarmSolver {
     }
 
     private static double calculateFitness(List<Integer> position, int shelfLength, List<Item> items) {
-        Shelf solution = decodeSolution(position, shelfLength, items);
+        Shelf solution = SolutionDecoder.decode(position, shelfLength, items);
         return solution.getUsage();
     }
 
@@ -113,7 +114,7 @@ public class ParticleSwarmSolver {
         }
         Collections.shuffle(unusedIndexes);
         // 填充空位
-        int fillIndex =0;
+        int fillIndex = 0;
         for (int i = 0; i < newPosition.size(); i++) {
             if (newPosition.get(i) == -1 && fillIndex < unusedIndexes.size()) {
                 newPosition.set(i, unusedIndexes.get(fillIndex));
@@ -123,23 +124,7 @@ public class ParticleSwarmSolver {
         particle.position = newPosition;
     }
 
-    private static Shelf decodeSolution(List<Integer> position, int shelfLength, List<Item> items) {
-        Shelf result = new Shelf();
-        List<Layer> shelf = result.getShelf();
-        for (int index : position) {
-            Item item = items.get(index);
-            boolean placed = false;
-            for (Layer layer : shelf) {
-                if (layer.addItem(item)) {
-                    placed = true;
-                    break;
-                }
-            }
-            if (!placed) {
-                result.addLayer(shelfLength, new Layer(shelfLength));
-                shelf.get(shelf.size() - 1).addItem(item);
-            }
-        }
-        return result;
+    public static List<Double> getFitnessLog() {
+        return fitnessLog;
     }
 }    
