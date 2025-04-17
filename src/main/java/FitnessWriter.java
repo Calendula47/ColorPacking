@@ -9,7 +9,7 @@ public class FitnessWriter {
             for (double fitness : fitnessLog) {
                 writer.write(String.valueOf(generation));
                 writer.write(",");
-                writer.write(String.valueOf(fitness));
+                writer.write(String.format("%.4f", fitness * 100));
                 writer.write("\n");
                 generation++;
             }

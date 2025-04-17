@@ -16,7 +16,7 @@ public class SolutionDecoder {
             }
             if (!placed) {
                 result.addLayer(shelfLength, new Layer(shelfLength));
-                shelf.get(shelf.size() - 1).addItem(item);
+                shelf.getLast().addItem(item);
             }
         }
         return result;

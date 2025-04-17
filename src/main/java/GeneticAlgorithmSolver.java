@@ -50,28 +50,36 @@ class Population {
 
 // 遗传算法求解器
 public class GeneticAlgorithmSolver {
-    private static final int POPULATION_SIZE = 100; // 种群大小
+    private static final int POPULATION_SIZE = 200; // 种群大小
     private static final int GENERATIONS = 500; // 迭代次数
-    private static final double MUTATION_RATE = 0.02;   // 变异率
-    private static final double CROSSOVER_RATE = 0.8;   // 交叉率
+    private static final double MUTATION_RATE = 0.03;   // 变异率
+    private static final double CROSSOVER_RATE = 0.7;   // 交叉率
     private static final Random random = new Random();  // 随机数生成器
     private static final List<Double> fitnessLog = new ArrayList<>();       // 适应度记录
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         fitnessLog.clear();
-        Population population = new Population(POPULATION_SIZE, items.size());  // 创建新的种群
-        for (int generation = 0; generation < GENERATIONS; generation++) {  // 进行迭代
-            double generationFitness = 0;   // 适应度置零
-            List<Double> fitnessValues = calculateFitness(population, shelfLength, items);  // 通过传入种群、货架长度和物品列表计算适应度
-            Population newPopulation = new Population(POPULATION_SIZE, items.size());   //  创建新的种群
-            for (int i = 0; i < POPULATION_SIZE; i++) {
+        Population population = new Population(POPULATION_SIZE, items.size()); // 初始化种群
+        for (int generation = 0; generation < GENERATIONS; generation++) { // 迭代过程
+            double generationFitness = 0; // 适应度置零
+            List<Double> fitnessValues = calculateFitness(population, shelfLength, items); // 计算种群所有个体适应度
+
+            Population newPopulation = new Population(POPULATION_SIZE, items.size()); // 创建下一代
+            // 找到亲代种群中适应度最高的个体
+            int bestParentIndex = getBestIndex(fitnessValues);
+            Individual bestParent = population.getIndividual(bestParentIndex);
+            // 将最佳亲代个体放入新种群
+            newPopulation.setIndividual(0, new Individual(items.size()));
+            newPopulation.getIndividual(0).setGenes(new ArrayList<>(bestParent.getGenes()));
+
+            for (int i = 1; i < POPULATION_SIZE; i++) { // 从索引1开始填充新种群，因为索引0已经被最佳亲代个体占据
                 double populationTotalFitness = 0;
                 for (double fitness : fitnessValues) {  // 计算适应度总和
                     populationTotalFitness += fitness;
                 }
                 generationFitness += (populationTotalFitness / POPULATION_SIZE);    // 当代适应度
-                Individual parent1 = selection(population, populationTotalFitness, fitnessValues);  // 选择父亲
-                Individual parent2 = selection(population, populationTotalFitness, fitnessValues);  // 选择母亲
+                Individual parent1 = selection(population, populationTotalFitness, fitnessValues);
+                Individual parent2 = selection(population, populationTotalFitness, fitnessValues); // 选择亲代
                 Individual child = crossover(parent1, parent2); // 杂交
                 mutate(child);  // 变异
                 newPopulation.setIndividual(i, child);  // 将子代添加到新种群
@@ -89,7 +97,7 @@ public class GeneticAlgorithmSolver {
         List<Double> fitnessValues = new ArrayList<>(); // 定义适应度列表
         for (Individual individual : population.getIndividuals()) { // 遍历种群中的每个个体
             Shelf solution = SolutionDecoder.decode(individual.getGenes(), shelfLength, items); // 解码个体基因
-            double fitness = solution.getUsage()* ((double) 1 / solution.shelf.size()); // 适应度考虑使用率和货架层数
+            double fitness = solution.getUsage() * ((double) 1 / solution.shelf.size()); // 适应度考虑使用率和货架层数
             fitnessValues.add(fitness);    // 添加适应度记录
         }
         return fitnessValues;
@@ -169,7 +177,7 @@ public class GeneticAlgorithmSolver {
 
     private static int getBestIndex(List<Double> fitnessValues) { // 获取最优适应度索引
         int bestIndex = 0;  // 初始化最优索引为0
-        double bestFitness = fitnessValues.get(0);  // 初始化最优适应度为第一个个体的适应度
+        double bestFitness = fitnessValues.getFirst();  // 初始化最优适应度为第一个个体的适应度
         for (int i = 1; i < fitnessValues.size(); i++) {    // 遍历适应度列表
             if (fitnessValues.get(i) > bestFitness) {   // 如果当前适应度大于最优适应度
                 bestFitness = fitnessValues.get(i); // 更新最优适应度

@@ -11,11 +11,11 @@ public class OutputWriter {
                     // 行首标明算例参数
                     writer.write(result.shelfLength + ",");
                     writer.write(result.itemSum + ",");
-                    writer.write(String.valueOf(result.colorSum));
+                    writer.write(result.colorSum + ",");
                 } else writer.write(",");
                 // 写入运行时长和最终填充度
                 writer.write(result.endTime - result.startTime + ",");
-                writer.write(String.format("% 2f", result.shelf.getUsage() * 100));
+                writer.write(String.format("%.2f", result.shelf.getUsage() * 100));
                 // 遗传算法为行尾
                 if (Objects.equals(result.algorithm, "GA")) writer.write("\n");
             }
