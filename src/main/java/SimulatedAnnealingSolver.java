@@ -37,7 +37,7 @@ public class SimulatedAnnealingSolver {
             fitnessLog.add(1 - currentSolution.cost);
 
             // Metropolis 准则
-            if (delta > 0 || Math.exp(delta / temperature) > Math.random()) {
+            if (delta < 0 || Math.exp(-delta / temperature) > Math.random()) {
                 currentSolution = newSolution;
             }
             if (currentSolution.cost > bestSolution.cost) {
