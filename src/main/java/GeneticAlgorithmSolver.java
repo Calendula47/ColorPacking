@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -5,176 +6,183 @@ import java.util.Random;
 
 // 个体
 class Individual {
+
     private List<Integer> genes;
 
     public Individual(int itemCount) {
-        this.genes = new ArrayList<>();
+        this.genes = new ArrayList<>(); // 创建一个空的基因列表
         for (int i = 0; i < itemCount; i++) {
-            genes.add(i);
+            genes.add(i);   // 初始化基因列表为0到itemCount-1
         }
-        Collections.shuffle(genes, new Random());
+        Collections.shuffle(genes, new Random());   // 打乱基因顺序
     }
 
     public List<Integer> getGenes() {
-        return genes;
+        return genes;   // 返回基因列表
     }
 
     public void setGenes(List<Integer> genes) {
-        this.genes = genes;
+        this.genes = genes; // 设置基因列表
     }
 }
 
 // 种群
 class Population {
-    private List<Individual> individuals;
+
+    private List<Individual> individuals;   // 创建个体群
 
     public Population(int populationSize, int itemCount) {
         this.individuals = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
-            individuals.add(new Individual(itemCount));
+            individuals.add(new Individual(itemCount)); // 填充种群
         }
     }
 
     public List<Individual> getIndividuals() {
-        return individuals;
+        return individuals; // 返回个体列表
     }
 
     public Individual getIndividual(int index) {
-        return individuals.get(index);
+        return individuals.get(index);  // 从个体群中获取特定索引的个体
     }
 
     public void setIndividual(int index, Individual individual) {
-        individuals.set(index, individual);
+        individuals.set(index, individual); // 更改个体群中指定索引的个体
     }
 }
 
 // 遗传算法求解器
 public class GeneticAlgorithmSolver {
-    private static final int POPULATION_SIZE = 100;
-    private static final int GENERATIONS = 500;
-    private static final double MUTATION_RATE = 0.02;
-    private static final double CROSSOVER_RATE = 0.8;
-    private static final Random random = new Random();
-    private static final List<Double> fitnessLog = new ArrayList<>();
 
+    private static final int POPULATION_SIZE = 100; // 种群大小
+    private static final int GENERATIONS = 500; // 迭代次数
+    private static final double MUTATION_RATE = 0.02;   // 变异率
+    private static final double CROSSOVER_RATE = 0.8;   // 交叉率
+    private static final Random random = new Random();  // 随机数生成器
+    private static final List<Double> fitnessLog = new ArrayList<>();       // 适应度记录
 
     public static Shelf solve(int shelfLength, List<Item> items) {
-        Population population = new Population(POPULATION_SIZE, items.size());
-        for (int generation = 0; generation < GENERATIONS; generation++) {
-            double generationFitness = 0;
-            List<Double> fitnessValues = calculateFitness(population, shelfLength, items);
-            Population newPopulation = new Population(POPULATION_SIZE, items.size());
+        Population population = new Population(POPULATION_SIZE, items.size());  // 创建新的种群
+        for (int generation = 0; generation < GENERATIONS; generation++) {  // 进行迭代
+            double generationFitness = 0;   // 适应度置零
+            List<Double> fitnessValues = calculateFitness(population, shelfLength, items);  // 通过传入种群、货架长度和物品列表计算适应度
+            Population newPopulation = new Population(POPULATION_SIZE, items.size());   //  创建新的种群
             for (int i = 0; i < POPULATION_SIZE; i++) {
                 double populationTotalFitness = 0;
-                for (double fitness : fitnessValues) {
+                for (double fitness : fitnessValues) {  // 计算适应度总和
                     populationTotalFitness += fitness;
                 }
-                generationFitness += (populationTotalFitness / POPULATION_SIZE);
-                Individual parent1 = selection(population, populationTotalFitness, fitnessValues);
-                Individual parent2 = selection(population, populationTotalFitness, fitnessValues);
-                Individual child = crossover(parent1, parent2);
-                mutate(child);
-                newPopulation.setIndividual(i, child);
+                generationFitness += (populationTotalFitness / POPULATION_SIZE);    // 当代适应度
+                Individual parent1 = selection(population, populationTotalFitness, fitnessValues);  // 选择父亲
+                Individual parent2 = selection(population, populationTotalFitness, fitnessValues);  // 选择母亲
+                Individual child = crossover(parent1, parent2); // 杂交
+                mutate(child);  // 变异
+                newPopulation.setIndividual(i, child);  // 将子代添加到新种群
             }
-            population = newPopulation;
-            fitnessLog.add(generationFitness);
+            population = newPopulation; // 种群更替
+            fitnessLog.add(generationFitness);  // 记录适应度
         }
-        List<Double> finalFitnessValues = calculateFitness(population, shelfLength, items);
-        int bestIndex = getBestIndex(finalFitnessValues);
-        Individual bestIndividual = population.getIndividual(bestIndex);
-        return SolutionDecoder.decode(bestIndividual.getGenes(), shelfLength, items);
+        List<Double> finalFitnessValues = calculateFitness(population, shelfLength, items); // 计算最终适应度
+        int bestIndex = getBestIndex(finalFitnessValues);   // 获得最优适应度迭代索引
+        Individual bestIndividual = population.getIndividual(bestIndex);    // 获取最优个体
+        return SolutionDecoder.decode(bestIndividual.getGenes(), shelfLength, items);   // 返回最优解
     }
 
-    private static List<Double> calculateFitness(Population population, int shelfLength, List<Item> items) {
-        List<Double> fitnessValues = new ArrayList<>();
-        for (Individual individual : population.getIndividuals()) {
-            Shelf solution = SolutionDecoder.decode(individual.getGenes(), shelfLength, items);
-            double cost = solution.getUsage();
-            fitnessValues.add(cost);
+    private static List<Double> calculateFitness(Population population, int shelfLength, List<Item> items) {    // 计算适应度
+        List<Double> fitnessValues = new ArrayList<>(); // 定义适应度列表
+        for (Individual individual : population.getIndividuals()) { // 遍历种群中的每个个体
+            Shelf solution = SolutionDecoder.decode(individual.getGenes(), shelfLength, items); // 解码个体基因
+            double cost = solution.getUsage();  // 获得占用货架的比例（适应度）
+            fitnessValues.add(cost);    // 添加适应度值
         }
         return fitnessValues;
     }
 
     private static Individual selection(Population population, double fitnessSum, List<Double> fitnessValues) {
-        double threshold = random.nextDouble() * fitnessSum; // 轮盘停留位置
-        double currentSum = 0;
-        int individualSize = population.getIndividuals().size();
-        for (int i = 0; i < individualSize; i++) {
-            currentSum += fitnessValues.get(i);
-            if (currentSum >= threshold) {
-                return population.getIndividual(i);
+        // 轮盘赌选择父亲母亲，单次选择一个
+        double threshold = random.nextDouble() * fitnessSum;    // 随机阈值
+        double currentSum = 0;  // 当前适应度和
+        int individualSize = population.getIndividuals().size();    // 获得种群中的个体数量
+        for (int i = 0; i < individualSize; i++) {  // 遍历种群中的每个个体
+            currentSum += fitnessValues.get(i); // 计算当前适应度和
+            if (currentSum >= threshold) {  // 如果当前的适应度大于等于阈值
+                return population.getIndividual(i); // 返回当前个体
             }
         }
-        return population.getIndividual(individualSize - 1);
+        return population.getIndividual(individualSize - 1);    // 返回最后一个个体
     }
 
     private static Individual crossover(Individual parent1, Individual parent2) {
-        if (random.nextDouble() < CROSSOVER_RATE) {
+        // 杂交
+        if (random.nextDouble() < CROSSOVER_RATE) { // 如果随机数小于交叉率
+            // 随机选择交叉点
             int start = random.nextInt(parent1.getGenes().size());
             int end = random.nextInt(parent1.getGenes().size());
-            if (start > end) {
+            if (start > end) {  // 确保 start 小于 end，如果不满足则交换
                 int temp = start;
                 start = end;
                 end = temp;
             }
 
-            List<Integer> childGenes = new ArrayList<>(parent1.getGenes().size());
-            for (int i = 0; i < parent1.getGenes().size(); i++) {
+            List<Integer> childGenes = new ArrayList<>(parent1.getGenes().size());  // 创建子代基因列表
+            for (int i = 0; i < parent1.getGenes().size(); i++) {   // 初始化子代基因列表，全置为 -1
                 childGenes.add(-1);
-            } // 初始化空子代
-            boolean[] used = new boolean[parent1.getGenes().size()];
-            for (int i = start; i <= end; i++) {
-                childGenes.set(i, parent1.getGenes().get(i));
-                used[parent1.getGenes().get(i)] = true;
-            } // 填充父1基因并标记
+            }
+            boolean[] used = new boolean[parent1.getGenes().size()];    // 创建一个布尔数组，用于标记基因是否已使用
+            for (int i = start; i <= end; i++) {    // 填充子代基因列表
+                childGenes.set(i, parent1.getGenes().get(i));   // 将父亲的基因添加到子代基因列表
+                used[parent1.getGenes().get(i)] = true; // 标记父亲基因已使用
+            }
 
             int index = 0;
-            for (int i = 0; i < parent2.getGenes().size(); i++) {
-                int gene = parent2.getGenes().get(i);
-                if (!used[gene]) {
-                    while (childGenes.get(index) != -1) {
+            for (int i = 0; i < parent2.getGenes().size(); i++) {   // 遍历母亲的基因
+                int gene = parent2.getGenes().get(i);   // 获取母亲基因
+                if (!used[gene]) {  // 如果母亲基因未使用
+                    while (childGenes.get(index) != -1) {   // 查找下一个未使用的基因位置
                         index++;
                     }
-                    childGenes.set(index, gene);
-                    used[gene] = true;
+                    childGenes.set(index, gene);    // 将母亲基因添加到子代基因列表
+                    used[gene] = true;  // 标记母亲基因已使用
                     index++;
                 }
-            } // 填充父2基因
+            }
 
-            Individual child = new Individual(parent1.getGenes().size());
-            child.setGenes(childGenes);
+            Individual child = new Individual(parent1.getGenes().size());   // 创建子代个体
+            child.setGenes(childGenes); // 设置子代基因列表
             return child;
         }
-        // 不交换则返回父1
-        Individual child = new Individual(parent1.getGenes().size());
-        child.setGenes(new ArrayList<>(parent1.getGenes()));
+        // 不杂交则基因跟随父亲
+        Individual child = new Individual(parent1.getGenes().size());   // 创建子代个体
+        child.setGenes(new ArrayList<>(parent1.getGenes()));    // 设置子代基因列表为父亲的基因列表
         return child;
     }
 
-    private static void mutate(Individual individual) {
-        for (int i = 0; i < individual.getGenes().size(); i++) {
-            if (random.nextDouble() < MUTATION_RATE) {
-                int j = random.nextInt(individual.getGenes().size());
-                int temp = individual.getGenes().get(i);
-                individual.getGenes().set(i, individual.getGenes().get(j));
-                individual.getGenes().set(j, temp);
+    private static void mutate(Individual individual) { // 变异
+        // 遍历个体基因列表，随机选择两个基因进行交换
+        for (int i = 0; i < individual.getGenes().size(); i++) {    // 遍历基因列表
+            if (random.nextDouble() < MUTATION_RATE) {  // 如果随机数小于变异率
+                // 随机选择两个基因进行交换
+                int j = random.nextInt(individual.getGenes().size());   // 随机选择另一个基因
+                int temp = individual.getGenes().get(i);    // 获取当前基因
+                individual.getGenes().set(i, individual.getGenes().get(j)); // 将当前基因设置为另一个基因
+                individual.getGenes().set(j, temp);     // 将另一个基因设置为当前基因
             }
         }
     }
 
-    private static int getBestIndex(List<Double> fitnessValues) {
-        int bestIndex = 0;
-        double bestFitness = fitnessValues.get(0);
-        for (int i = 1; i < fitnessValues.size(); i++) {
-            if (fitnessValues.get(i) > bestFitness) {
-                bestFitness = fitnessValues.get(i);
-                bestIndex = i;
+    private static int getBestIndex(List<Double> fitnessValues) { // 获取最优适应度索引
+        int bestIndex = 0;  // 初始化最优索引为0
+        double bestFitness = fitnessValues.get(0);  // 初始化最优适应度为第一个个体的适应度
+        for (int i = 1; i < fitnessValues.size(); i++) {    // 遍历适应度列表
+            if (fitnessValues.get(i) > bestFitness) {   // 如果当前适应度大于最优适应度
+                bestFitness = fitnessValues.get(i); // 更新最优适应度
+                bestIndex = i;  // 更新最优索引
             }
         }
         return bestIndex;
     }
 
-    public static List<Double> getFitnessLog() {
-        return fitnessLog;
+    public static List<Double> getFitnessLog() {    // 获取适应度记录
+        return fitnessLog;  // 返回适应度记录
     }
 }
