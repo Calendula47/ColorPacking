@@ -55,7 +55,7 @@ public class GeneticAlgorithmSolver {
     private static final double MUTATION_RATE = 0.02;
     private static final double CROSSOVER_RATE = 0.8;
     private static final Random random = new Random();
-    private static List<Double> fitnessLog = new ArrayList<>();
+    private static final List<Double> fitnessLog = new ArrayList<>();
 
 
     public static Shelf solve(int shelfLength, List<Item> items) {
