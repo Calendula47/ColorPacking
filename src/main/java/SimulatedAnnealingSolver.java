@@ -18,9 +18,9 @@ class Solution {
 }
 
 public class SimulatedAnnealingSolver {
-    private static final double INITIAL_TEMPERATURE = 1000;
+    private static final double INITIAL_TEMPERATURE = 5000;
     private static final double COOLING_RATE = 0.99;
-    private static final int MAX_ITERATIONS = 1000;
+    private static final int MAX_ITERATIONS = 5000;
     private static final List<Double> fitnessLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
@@ -37,7 +37,7 @@ public class SimulatedAnnealingSolver {
             fitnessLog.add(currentSolution.cost);
 
             // Metropolis 准则
-            if (delta < 0 || Math.exp(-delta / temperature) > Math.random()) {
+            if (delta > 0 || Math.exp(delta / temperature) > Math.random()) {
                 currentSolution = newSolution;
             }
             if (currentSolution.cost > bestSolution.cost) {
