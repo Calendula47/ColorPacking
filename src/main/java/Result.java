@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class Result {
     String algorithm;
     int shelfLength;
@@ -17,13 +15,5 @@ public class Result {
         this.startTime = startTime;
         this.endTime = endTime;
         this.shelf = shelf;
-    }
-
-    public long durationTime(long startTime, long endTime) {
-        return (endTime - startTime);
-    }
-
-    public List<Layer> getShelf() {
-        return shelf.getShelf();
     }
 }

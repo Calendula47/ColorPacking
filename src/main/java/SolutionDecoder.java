@@ -9,6 +9,7 @@ public class SolutionDecoder {
             boolean placed = false;
             for (Layer layer : shelf) {
                 if (layer.addItem(item)) {
+                    result.usedLength += item.getLength();
                     placed = true;
                     break;
                 }
@@ -18,7 +19,6 @@ public class SolutionDecoder {
                 shelf.get(shelf.size() - 1).addItem(item);
             }
         }
-
         return result;
     }
 }

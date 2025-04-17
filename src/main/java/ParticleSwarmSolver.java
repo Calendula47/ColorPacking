@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 class Particle {
     List<Integer> position;
@@ -18,7 +15,7 @@ class Particle {
         Collections.shuffle(position, random);
         velocity = new ArrayList<>(Collections.nCopies(itemCount, 0));
         personalBestPosition = new ArrayList<>(position);
-        personalBestFitness = Double.MAX_VALUE;
+        personalBestFitness = 0;
     }
 }
 
@@ -29,7 +26,7 @@ public class ParticleSwarmSolver {
     private static final double W = 0.7; // 惯性
     private static final double C1 = 1.4; // 个体加速度
     private static final double C2 = 1.4; // 群体加速度
-    private static List<Double> fitnessLog = new ArrayList<>();
+    private static final List<Double> fitnessLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         List<Particle> particles = initializeParticles(items.size());
@@ -56,7 +53,7 @@ public class ParticleSwarmSolver {
             } // 向最优解更新速度
             fitnessLog.add(totalFitness / PARTICLE_COUNT);
         }
-        return SolutionDecoder.decode(globalBestPosition, shelfLength, items);
+        return SolutionDecoder.decode(Objects.requireNonNull(globalBestPosition), shelfLength, items);
     }
 
     private static List<Particle> initializeParticles(int itemCount) {
@@ -78,7 +75,11 @@ public class ParticleSwarmSolver {
             double r1 = random.nextDouble(); // 个体加速率
             double r2 = random.nextDouble(); // 群体加速率
             int personalAcceleration = (int) (C1 * r1 * (particle.personalBestPosition.get(i) - particle.position.get(i)));
-            int socialAcceleration = (int) (C2 * r2 * (globalBestPosition.get(i) - particle.position.get(i)));
+            int socialAcceleration;
+            if (globalBestPosition == null) {
+                globalBestPosition = particle.position;
+            }
+            socialAcceleration = (int) (C2 * r2 * (globalBestPosition.get(i) - particle.position.get(i)));
             particle.velocity.set(i, (int) (W * particle.velocity.get(i) + personalAcceleration + socialAcceleration));
         }
     }

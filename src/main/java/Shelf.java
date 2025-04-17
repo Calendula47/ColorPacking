@@ -14,7 +14,6 @@ public class Shelf {
 
     public void addLayer(int shelfLength, Layer layer) {
         totalLength += shelfLength;
-        usedLength += (shelfLength - layer.remainLength);
         shelf.add(layer);
     }
 

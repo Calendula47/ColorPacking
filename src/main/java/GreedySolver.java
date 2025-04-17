@@ -13,6 +13,7 @@ public class GreedySolver {
             boolean placed = false;
             for (Layer layer : shelf) {
                 if (layer.addItem(item)) {
+                    result.usedLength += item.getLength();
                     placed = true;
                     break;
                 }

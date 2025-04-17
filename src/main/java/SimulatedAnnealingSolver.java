@@ -21,7 +21,7 @@ public class SimulatedAnnealingSolver {
     private static final double INITIAL_TEMPERATURE = 1000;
     private static final double COOLING_RATE = 0.99;
     private static final int MAX_ITERATIONS = 1000;
-    private static List<Double> fitnessLog = new ArrayList<>();
+    private static final List<Double> fitnessLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         Solution currentSolution = new Solution(generateInitialSolution(items.size()), 0);
@@ -39,7 +39,7 @@ public class SimulatedAnnealingSolver {
             if (delta < 0 || Math.exp(-delta / temperature) > Math.random()) {
                 currentSolution = newSolution;
             }
-            if (currentSolution.cost < bestSolution.cost) {
+            if (currentSolution.cost > bestSolution.cost) {
                 bestSolution = new Solution(new ArrayList<>(currentSolution.getSolution()), currentSolution.cost);
             }
 
@@ -69,7 +69,7 @@ public class SimulatedAnnealingSolver {
         int index1 = random.nextInt(solution.size());
         int index2 = random.nextInt(solution.size());
         if (index1 == index2) {
-            Collections.swap(neighbor, index1, solution.size() - index1);
+            Collections.swap(neighbor, index1, solution.size() - (index1 + 1));
         } else {
             Collections.swap(neighbor, index1, index2);
         }

@@ -11,9 +11,10 @@ public class FitnessWriter {
                 writer.write(",");
                 writer.write(String.valueOf(fitness));
                 writer.write("\n");
+                generation++;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("适应度历史写入错误：" + e.getMessage());
         }
     }
 }
