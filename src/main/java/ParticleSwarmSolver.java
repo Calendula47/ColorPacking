@@ -29,6 +29,7 @@ public class ParticleSwarmSolver {
     private static final List<Double> fitnessLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
+        fitnessLog.clear();
         List<Particle> particles = initializeParticles(items.size());
         List<Integer> globalBestPosition = null;
         double globalBestFitness = 0;

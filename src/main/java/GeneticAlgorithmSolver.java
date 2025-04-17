@@ -26,7 +26,7 @@ class Individual {
 
 // 种群
 class Population {
-    private List<Individual> individuals;
+    private final List<Individual> individuals;
 
     public Population(int populationSize, int itemCount) {
         this.individuals = new ArrayList<>();
@@ -59,6 +59,7 @@ public class GeneticAlgorithmSolver {
 
 
     public static Shelf solve(int shelfLength, List<Item> items) {
+        fitnessLog.clear();
         Population population = new Population(POPULATION_SIZE, items.size());
         for (int generation = 0; generation < GENERATIONS; generation++) {
             double generationFitness = 0;
@@ -89,8 +90,8 @@ public class GeneticAlgorithmSolver {
         List<Double> fitnessValues = new ArrayList<>();
         for (Individual individual : population.getIndividuals()) {
             Shelf solution = SolutionDecoder.decode(individual.getGenes(), shelfLength, items);
-            double cost = solution.getUsage();
-            fitnessValues.add(cost);
+            double fitness = solution.getUsage() * ((double) 1 / solution.shelf.size()); // 遗传算法适应度考虑使用率和货架层数
+            fitnessValues.add(fitness);
         }
         return fitnessValues;
     }

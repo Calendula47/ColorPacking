@@ -24,6 +24,7 @@ public class SimulatedAnnealingSolver {
     private static final List<Double> fitnessLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
+        fitnessLog.clear();
         Solution currentSolution = new Solution(generateInitialSolution(items.size()), 0);
         currentSolution.cost = calculateCost(currentSolution.getSolution(), shelfLength, items);
         Solution bestSolution = new Solution(new ArrayList<>(currentSolution.getSolution()), currentSolution.cost);
