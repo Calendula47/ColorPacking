@@ -8,7 +8,7 @@ import java.util.Random;
 public class InstanceGenerator {
 
     public static void main(String[] args) {
-        int instanceSum = 3; // 每个参数组合生成的实例数
+        int instanceSum = 5; // 每个参数组合生成的实例数
         int[] itemSums = {300, 300, 300, 500, 500, 500, 300, 300, 300, 500, 500, 500, 300, 300, 300, 500, 500, 500};
         int[] shelfLengths = {500, 500, 500, 500, 500, 500, 750, 750, 750, 750, 750, 750, 1000, 1000, 1000, 1000, 1000, 1000};
         int[] colorSums = {2, 7, 15, 2, 7, 15, 2, 7, 15, 2, 7, 15, 2, 7, 15, 2, 7, 15};
