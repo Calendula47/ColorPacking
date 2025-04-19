@@ -18,10 +18,10 @@ class Solution {
 }
 
 public class SimulatedAnnealingSolver {
-    private static final double INITIAL_TEMPERATURE = 1000; // 初始温度
+    private static final double INITIAL_TEMPERATURE = 5000; // 初始温度
     private static final double COOLING_RATE = 0.99; // 降温率
-    private static final int MAX_ITERATIONS = 1000; // 最大迭代次数
-    private static final List<Double> fitnessLog = new ArrayList<>(); // 用于记录每代平均填充度
+    private static final int MAX_ITERATIONS = 3000; // 最大迭代次数
+    private static final List<Double> fitnessLog = new ArrayList<>(); // 用于记录每代填充度
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         fitnessLog.clear(); // 初始化迭代日志

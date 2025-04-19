@@ -6,6 +6,7 @@ import java.util.Random;
 // 个体
 class Individual {
     private List<Integer> genes;
+    private double fitness;
 
     public Individual(int itemCount) {
         this.genes = new ArrayList<>();
@@ -21,6 +22,14 @@ class Individual {
 
     public void setGenes(List<Integer> genes) {
         this.genes = genes;
+    }
+
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
+    }
+
+    public double getFitness() {
+        return fitness;
     }
 }
 
@@ -51,7 +60,7 @@ class Population {
 // 遗传算法求解器
 public class GeneticAlgorithmSolver {
     private static final int POPULATION_SIZE = 100; // 种群大小
-    private static final int GENERATIONS = 1000; // 迭代次数
+    private static final int GENERATIONS = 300; // 迭代次数
     private static final double MUTATION_RATE = 0.03; // 变异率
     private static final double CROSSOVER_RATE = 0.75; // 交叉率
     private static final Random random = new Random();
@@ -66,13 +75,12 @@ public class GeneticAlgorithmSolver {
 
             Population newPopulation = new Population(POPULATION_SIZE, items.size()); // 创建下一代
             // 找到亲代种群中适应度最高的个体
-            int bestParentIndex = getBestIndex(fitnessValues);
-            Individual bestParent = population.getIndividual(bestParentIndex);
+            Individual bestParent = population.getIndividual(getBestIndex(fitnessValues));
             // 将最佳亲代个体放入新种群
             newPopulation.setIndividual(0, new Individual(items.size()));
             newPopulation.getIndividual(0).setGenes(new ArrayList<>(bestParent.getGenes()));
 
-            for (int i = 1; i < POPULATION_SIZE; i++) { // 从索引1开始填充新种群，因为索引0已经被最佳亲代个体占据
+            for (int i = 1; i < POPULATION_SIZE; i++) { // 从索引 1 开始填充新种群，因为索引 0 已经被最佳亲代个体占据
                 double populationTotalFitness = 0;
                 for (double fitness : fitnessValues) { // 计算适应度总和以便轮盘赌选择调用
                     populationTotalFitness += fitness;
@@ -81,10 +89,16 @@ public class GeneticAlgorithmSolver {
                 Individual parent2 = selection(population, populationTotalFitness, fitnessValues); // 选择亲代
                 Individual child = crossover(parent1, parent2); // 杂交
                 mutate(child); // 变异
-                newPopulation.setIndividual(i, child); // 将子代添加到新种群
+                if (child.getFitness() >= parent1.getFitness()) {
+                    if (child.getFitness() >= parent2.getFitness()) {
+                        newPopulation.setIndividual(i, child); // 当子代大于亲代适应度时将子代添加到新种群
+                    }
+                    newPopulation.setIndividual(i,parent2); // 大于父 1 但小于父 2 时添加父 2
+                }
+                newPopulation.setIndividual(i,parent1); // 小于父 1 时直接添加父 1
             }
             population = newPopulation;
-//            fitnessLog.add(generationFitness); // 添加日志（群体平均）（最优在 getBestIndex 函数中）
+            fitnessLog.add(generationFitness); // 添加日志（群体平均）（最优在 getBestIndex 函数中）
         }
         List<Double> finalFitnessValues = calculateFitness(population, shelfLength, items); // 计算最终适应度
         int bestIndex = getBestIndex(finalFitnessValues);
@@ -100,6 +114,7 @@ public class GeneticAlgorithmSolver {
             double fitness = solution.getUsage() * ((double) 1 / solution.layers.size()); // 算法适应度考虑使用率和货架层数
             fitnessValues.add(fitness); // 添加适应度记录
             generationFitness += (solution.getUsage() / POPULATION_SIZE);
+            individual.setFitness(fitness); // 设置个体适应度
         }
         return fitnessValues;
     }
@@ -134,19 +149,19 @@ public class GeneticAlgorithmSolver {
             // 为了保证解的完整性，这里使用部分交叉映射（PMX）算法
             boolean[] used = new boolean[parent1.getGenes().size()]; // 用于标记基因是否已使用
             for (int i = start; i <= end; i++) { // 填充子代基因列表
-                childGenes.set(i, parent1.getGenes().get(i)); // 将父1的基因添加到子代基因列表
-                used[parent1.getGenes().get(i)] = true; // 标记父1基因已使用
+                childGenes.set(i, parent1.getGenes().get(i)); // 将父 1 的基因添加到子代基因列表
+                used[parent1.getGenes().get(i)] = true; // 标记该基因已使用
             }
 
             int index = 0;
-            for (int i = 0; i < parent2.getGenes().size(); i++) { // 遍历父2基因
+            for (int i = 0; i < parent2.getGenes().size(); i++) { // 遍历父 2 基因
                 int gene = parent2.getGenes().get(i);
                 if (!used[gene]) { // 如果本条基因未使用
                     while (childGenes.get(index) != -1) { // 查找子代下一个未使用的基因位置
                         index++;
                     }
-                    childGenes.set(index, gene); // 将父2基因添加到子代基因
-                    used[gene] = true; // 标记父2基因已使用
+                    childGenes.set(index, gene); // 将父 2 基因添加到子代基因
+                    used[gene] = true; // 标记该基因已使用
                     index++;
                 }
             }
@@ -181,7 +196,7 @@ public class GeneticAlgorithmSolver {
                 bestIndex = i; // 更新最优索引
             }
         }
-        fitnessLog.add(bestFitness); // 添加日志（最优）（群体平均在 solve 函数中）
+//        fitnessLog.add(bestFitness); // 添加日志（最优）（群体平均在 solve 函数中）
         return bestIndex;
     }
 
