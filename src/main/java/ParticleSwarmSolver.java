@@ -22,7 +22,7 @@ class Particle {
 // 粒子群算法求解器
 public class ParticleSwarmSolver {
     private static final int PARTICLE_COUNT = 100;
-    private static final int ITERATIONS = 500;
+    private static final int ITERATIONS = 300;
     private static final double W = 0.7; // 惯性
     private static final double C1 = 1.5; // 个体加速度
     private static final double C2 = 1.8; // 群体加速度

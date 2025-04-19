@@ -61,7 +61,7 @@ public class SimulatedAnnealingSolver {
 
     private static double calculateEnergy(List<Integer> solution, int shelfLength, List<Item> items) {
         Shelf result = SolutionDecoder.decode(solution, shelfLength, items);
-        return (1 - result.getUsage()); // 由于模拟退火算法接受能量低的解，这里使用货架剩余比例表示能量
+        return 1 - result.getUsage(); // 由于模拟退火算法接受能量低的解，这里使用货架剩余比例表示能量
     }
 
     private static List<Integer> getNeighbor(List<Integer> solution) {
