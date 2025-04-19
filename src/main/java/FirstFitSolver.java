@@ -5,23 +5,22 @@ public class FirstFitSolver {
     public static Shelf solve(int shelfLength, List<Item> items) {
         List<Item> fitItems = new ArrayList<>(items);
         Shelf result = new Shelf();
-        List<Layer> shelf = result.getShelf();
+        List<Layer> layers = result.layers;
         for (Item item : fitItems) {
             boolean placed = false;
-            for (Layer layer : shelf) {
-                if (layer.addItem(item)) {
-                    result.usedLength += item.getLength();
+            for (Layer layer : layers) {
+                if (layer.addItem(item)) { // 调用放置函数尝试放置
+                    result.usedLength += item.length; // 更新货架总使用
                     placed = true;
                     break;
                 }
             }
-            if (!placed) {
+            if (!placed) { // 无法放置时增加新的层再放置物品
                 result.addLayer(shelfLength, new Layer(shelfLength));
-                shelf.getLast().addItem(item);
+                layers.getLast().addItem(item);
+                result.usedLength += item.length;
             }
         }
-
         return result;
-
     }
 }

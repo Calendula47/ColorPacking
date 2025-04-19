@@ -10,8 +10,4 @@ public class Item {
     public int getLength() {
         return length;
     }
-
-    public int getColor() {
-        return color;
-    }
 }

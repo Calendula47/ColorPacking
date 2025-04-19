@@ -3,19 +3,19 @@ import java.util.List;
 
 public class Layer {
     int remainLength;
-    List<Item> layer;
+    List<Item> items;
 
     public Layer(int shelfLength) {
         this.remainLength = shelfLength;
-        this.layer = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
 
     // 检查货物是否能放入当前层
     public boolean addItem(Item item) {
-        if (remainLength >= item.getLength() && (layer.isEmpty() || layer.getLast().getColor() != item.getColor())) {
-            layer.add(item);
-            remainLength -= item.getLength();
-            return true; // 长度和颜色合适时更新本层数据
+        if (remainLength >= item.length && (items.isEmpty() || items.getLast().color != item.color)) {
+            items.add(item);
+            remainLength -= item.length;
+            return true; // 长度足够放置或该层为空且和上一个物品颜色不同放置物品
         }
         return false;
     }

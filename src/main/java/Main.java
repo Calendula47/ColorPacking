@@ -10,15 +10,18 @@ import java.util.Objects;
 // 主程序入口
 public class Main {
     public static void main(String[] args) {
-        List<Result> results = new ArrayList<>();
-        Path dictionary = Paths.get("instances");
+        List<Result> results = new ArrayList<>(); // 输出日志用于记录每个算例每个算法的最终结果
+        Path dictionary = Paths.get("instances"); // 算例存放文件夹
+        long mainStartTime = System.currentTimeMillis();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dictionary, "*.csv")) {
             for (Path path : stream) {
-                if (Files.isRegularFile(path)) {
+                if (Files.isRegularFile(path)) { // 遍历算例文件夹中所有算例
                     String filePath = String.valueOf(path.getFileName());
-                    Input input = InputReader.read("instances/" + filePath);
-                    List<Item> items = Objects.requireNonNull(input).items;
-                    int shelfLength = input.shelfLength;
+                    Input input = InputReader.read("instances/" + filePath); // 读取当前算例
+                    System.out.println(filePath); // 调试用
+                    List<Item> items = Objects.requireNonNull(input).items; // 读取算例中的物品
+
+                    int shelfLength = input.shelfLength; // 用于书写输出日志的参数
                     int itemSum = input.itemSum;
                     int colorSum = input.colorSum;
                     long startTime;
@@ -69,5 +72,6 @@ public class Main {
             System.err.println("文件读取错误：" + e.getMessage());
         }
         OutputWriter.writeOutput(Objects.requireNonNull(results));
+        System.out.println(System.currentTimeMillis() - mainStartTime);
     }
 }

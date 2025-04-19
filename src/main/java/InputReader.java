@@ -19,24 +19,24 @@ class Input {
 }
 
 public class InputReader {
-
-    public static Input read(String filePath) throws IOException {
+    static Input read(String filePath) {
         List<Item> items = new ArrayList<>();
         int readShelfLength;
         int readItemSum;
         int readColorSum;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            readShelfLength = readInt(reader.readLine(), "货架长度");
-            readItemSum = readInt(reader.readLine(), "物品总数");
-            readColorSum = readInt(reader.readLine(), "颜色总数");
+
+            readShelfLength = Integer.parseInt(reader.readLine());
+            readItemSum = Integer.parseInt(reader.readLine());
+            readColorSum = Integer.parseInt(reader.readLine()); // 前三行为货架长度、物品数量和颜色数量
 
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] values = line.split(",");
+                String[] values = line.split(","); // 长度和颜色由逗号分隔，物品之间由换行符分隔
                 if (values.length >= 2) {
-                    int length = readInt(values[0],"物品长度");
-                    int color = readInt(values[1],"物品颜色");
+                    int length = Integer.parseInt(values[0]);
+                    int color = Integer.parseInt(values[1]);
                     items.add(new Item(length, color));
                 }
             }
@@ -45,14 +45,5 @@ public class InputReader {
             return null;
         }
         return new Input(readShelfLength, readItemSum, readColorSum, items);
-    }
-
-    private static int readInt(String value, String readingName) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            System.err.println("无法读取" + readingName + "：" + e.getMessage());
-            throw e;
-        }
     }
 }
