@@ -58,7 +58,6 @@ public class Main {
                     currentResult = new Result("PS", shelfLength, itemSum, colorSum, startTime, endTime, shelfPS);
                     results.add(currentResult);
                     FitnessWriter.write(ParticleSwarmSolver.getFitnessLog(), "log/" + instanceName + "_particle_swarm.csv");
-                    FitnessWriter.write(ParticleSwarmSolver.getBestLog(), "log/" + instanceName + "_particle_swarm_best.csv");
 
                     // 遗传
                     startTime = System.currentTimeMillis();
@@ -67,7 +66,6 @@ public class Main {
                     currentResult = new Result("GA", shelfLength, itemSum, colorSum, startTime, endTime, shelfGA);
                     results.add(currentResult);
                     FitnessWriter.write(GeneticAlgorithmSolver.getFitnessLog(), "log/" + instanceName + "_genetic_algorithm.csv");
-                    FitnessWriter.write(GeneticAlgorithmSolver.getBestLog(), "log/" + instanceName + "_genetic_algorithm_best.csv");
                 }
             }
         } catch (IOException e) {

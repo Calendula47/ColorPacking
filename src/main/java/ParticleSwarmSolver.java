@@ -31,10 +31,10 @@ public class ParticleSwarmSolver {
     private static final double C1 = 1.5; // 个体加速度
     private static final double C2 = 1.8; // 群体加速度
     private static final List<Double> fitnessLog = new ArrayList<>();
-    private static final List<Double> bestLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         fitnessLog.clear(); // 初始化迭代日志
+
         List<Particle> particles = initializeParticles(items.size()); // 初始化粒子群
         List<Integer> globalBestPosition = null; // 初始化群体最优解位置
         double globalBestFitness = 0; // 初始化群体最优解适应度
@@ -57,8 +57,7 @@ public class ParticleSwarmSolver {
                 updateVelocity(particle, globalBestPosition);
                 updatePosition(particle);
             }
-            fitnessLog.add(totalFitness / PARTICLE_COUNT); // 添加日志（群体平均）
-            bestLog.add(globalBestFitness); // 添加日志（最优）
+            fitnessLog.add(totalFitness / PARTICLE_COUNT); // 添加适应度日志
         }
         return SolutionDecoder.decode(Objects.requireNonNull(globalBestPosition), shelfLength, items);
     }
@@ -133,7 +132,4 @@ public class ParticleSwarmSolver {
         return fitnessLog;
     }
 
-    public static List<Double> getBestLog() {
-        return bestLog;
-    }
 }

@@ -66,10 +66,10 @@ public class GeneticAlgorithmSolver {
     private static final Random random = new Random();
     private static final List<Double> fitnessLog = new ArrayList<>();
     private static double generationFitness; // 用于记录每代平均适应度
-    private static final List<Double> bestLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         fitnessLog.clear(); // 初始化迭代日志
+
         Population population = new Population(POPULATION_SIZE, items.size()); // 初始化种群
         for (int generation = 0; generation < GENERATIONS; generation++) { // 迭代过程
             List<Double> fitnessValues = calculateFitness(population, shelfLength, items); // 计算种群所有个体适应度
@@ -88,18 +88,25 @@ public class GeneticAlgorithmSolver {
                 }
                 Individual parent1 = selection(population, populationTotalFitness, fitnessValues);
                 Individual parent2 = selection(population, populationTotalFitness, fitnessValues); // 选择亲代
+
+                if (parent1 == parent2 && random.nextDouble() * GENERATIONS > 5.0 * generation / 3) {
+                    mutate(parent1);
+                    newPopulation.setIndividual(i, parent1); // 在迭代的前 3/5 时间内如果两亲代相同则可能添加一个变异后的亲代防止早熟收敛，概率逐渐变小
+                    continue;
+                }
+
                 Individual child = crossover(parent1, parent2); // 杂交
                 mutate(child);
-//                if (child.getFitness() >= parent1.getFitness()) { // 判断子代存活与否
-//                    if (child.getFitness() >= parent2.getFitness()) {
+                if (child.getFitness() >= parent1.getFitness()) { // 判断子代存活与否
+                    if (child.getFitness() >= parent2.getFitness()) {
                         newPopulation.setIndividual(i, child); // 当子代大于亲代适应度时将子代添加到新种群
-//                    }
-//                    newPopulation.setIndividual(i, parent2); // 不如亲代时判断为子代死亡将亲代放入
-//                }
-//                newPopulation.setIndividual(i,parent1);
+                    }
+                    newPopulation.setIndividual(i, parent2); // 不如亲代时判断为子代死亡将亲代放入
+                }
+                newPopulation.setIndividual(i,parent1);
             }
             population = newPopulation;
-            fitnessLog.add(generationFitness); // 添加日志（群体平均）（最优在 getBestIndex 函数中）
+            fitnessLog.add(generationFitness); // 添加适应度日志
         }
         List<Double> finalFitnessValues = calculateFitness(population, shelfLength, items); // 计算最终适应度
         int bestIndex = getBestIndex(finalFitnessValues);
@@ -197,15 +204,10 @@ public class GeneticAlgorithmSolver {
                 bestIndex = i; // 更新最优索引
             }
         }
-        bestLog.add(bestFitness); // 添加日志（最优）（群体平均在 solve 函数中）
         return bestIndex;
     }
 
     public static List<Double> getFitnessLog() {
         return fitnessLog;
-    }
-
-    public static List<Double> getBestLog() {
-        return bestLog;
     }
 }
