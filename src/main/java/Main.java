@@ -31,14 +31,14 @@ public class Main {
                     startTime = System.currentTimeMillis();
                     Shelf shelfFF = FirstFitSolver.solve(shelfLength, items);
                     endTime = System.currentTimeMillis();
-                    Result currentResult = new Result("FirstFit", shelfLength, itemSum, colorSum, startTime, endTime, shelfFF);
+                    Result currentResult = new Result("FF", shelfLength, itemSum, colorSum, startTime, endTime, shelfFF);
                     results.add(currentResult);
 
-                    // 贪心
+                    // 降序
                     startTime = System.currentTimeMillis();
-                    Shelf shelfGreedy = GreedySolver.solve(shelfLength, items);
+                    Shelf shelfGreedy = DecreaseSolver.solve(shelfLength, items);
                     endTime = System.currentTimeMillis();
-                    currentResult = new Result("Greedy", shelfLength, itemSum, colorSum, startTime, endTime, shelfGreedy);
+                    currentResult = new Result("FFD", shelfLength, itemSum, colorSum, startTime, endTime, shelfGreedy);
                     results.add(currentResult);
 
                     String instanceName = filePath.substring(0, filePath.length() - 4);
@@ -58,6 +58,7 @@ public class Main {
                     currentResult = new Result("PS", shelfLength, itemSum, colorSum, startTime, endTime, shelfPS);
                     results.add(currentResult);
                     FitnessWriter.write(ParticleSwarmSolver.getFitnessLog(), "log/" + instanceName + "_particle_swarm.csv");
+                    FitnessWriter.write(ParticleSwarmSolver.getBestLog(), "log/" + instanceName + "_particle_swarm_best.csv");
 
                     // 遗传
                     startTime = System.currentTimeMillis();
@@ -66,6 +67,7 @@ public class Main {
                     currentResult = new Result("GA", shelfLength, itemSum, colorSum, startTime, endTime, shelfGA);
                     results.add(currentResult);
                     FitnessWriter.write(GeneticAlgorithmSolver.getFitnessLog(), "log/" + instanceName + "_genetic_algorithm.csv");
+                    FitnessWriter.write(GeneticAlgorithmSolver.getBestLog(), "log/" + instanceName + "_genetic_algorithm_best.csv");
                 }
             }
         } catch (IOException e) {

@@ -6,9 +6,9 @@ import java.util.Objects;
 public class OutputWriter {
     public static void writeOutput(List<Result> results) {
         try (FileWriter writer = new FileWriter("Output.csv")) {
-            writer.write("Shelf,Item,Color,FFTime,FFUse,GrTime,GrUse,SATime,SAUse,PSTime,PSUse,GATime,GAUse\n");
+            writer.write("Shelf,Item,Color,FFTime,FFUse,FFDTime,FFDUse,SATime,SAUse,PSTime,PSUse,GATime,GAUse\n");
             for (Result result : results) {
-                if (Objects.equals(result.algorithm, "FirstFit")) {
+                if (Objects.equals(result.algorithm, "FF")) {
                     // 行首标明算例参数
                     writer.write(result.shelfLength + ",");
                     writer.write(result.itemSum + ",");

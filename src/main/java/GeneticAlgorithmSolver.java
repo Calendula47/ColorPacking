@@ -59,13 +59,14 @@ class Population {
 
 // 遗传算法求解器
 public class GeneticAlgorithmSolver {
-    private static final int POPULATION_SIZE = 100; // 种群大小
+    private static final int POPULATION_SIZE = 500; // 种群大小
     private static final int GENERATIONS = 300; // 迭代次数
     private static final double MUTATION_RATE = 0.05; // 变异率
-    private static final double CROSSOVER_RATE = 0.75; // 交叉率
+    private static final double CROSSOVER_RATE = 0.8; // 交叉率
     private static final Random random = new Random();
     private static final List<Double> fitnessLog = new ArrayList<>();
     private static double generationFitness; // 用于记录每代平均适应度
+    private static final List<Double> bestLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         fitnessLog.clear(); // 初始化迭代日志
@@ -88,11 +89,14 @@ public class GeneticAlgorithmSolver {
                 Individual parent1 = selection(population, populationTotalFitness, fitnessValues);
                 Individual parent2 = selection(population, populationTotalFitness, fitnessValues); // 选择亲代
                 Individual child = crossover(parent1, parent2); // 杂交
-                mutate(child); // 变异
-                if (child.getFitness() >= parent1.getFitness()) {
-                    newPopulation.setIndividual(i, child); // 当子代大于亲代适应度时将子代添加到新种群（不检查父 2 以留出一定接受坏解的可能性，保证种群多样性）
-                }
-                newPopulation.setIndividual(i,parent1); // 小于父 1 时直接添加父 1
+                mutate(child);
+//                if (child.getFitness() >= parent1.getFitness()) { // 判断子代存活与否
+//                    if (child.getFitness() >= parent2.getFitness()) {
+                        newPopulation.setIndividual(i, child); // 当子代大于亲代适应度时将子代添加到新种群
+//                    }
+//                    newPopulation.setIndividual(i, parent2); // 不如亲代时判断为子代死亡将亲代放入
+//                }
+//                newPopulation.setIndividual(i,parent1);
             }
             population = newPopulation;
             fitnessLog.add(generationFitness); // 添加日志（群体平均）（最优在 getBestIndex 函数中）
@@ -193,11 +197,15 @@ public class GeneticAlgorithmSolver {
                 bestIndex = i; // 更新最优索引
             }
         }
-//        fitnessLog.add(bestFitness); // 添加日志（最优）（群体平均在 solve 函数中）
+        bestLog.add(bestFitness); // 添加日志（最优）（群体平均在 solve 函数中）
         return bestIndex;
     }
 
     public static List<Double> getFitnessLog() {
         return fitnessLog;
+    }
+
+    public static List<Double> getBestLog() {
+        return bestLog;
     }
 }

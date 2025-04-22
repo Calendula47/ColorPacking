@@ -1,4 +1,8 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 class Particle {
     List<Integer> position;
@@ -21,12 +25,13 @@ class Particle {
 
 // 粒子群算法求解器
 public class ParticleSwarmSolver {
-    private static final int PARTICLE_COUNT = 100;
+    private static final int PARTICLE_COUNT = 500;
     private static final int ITERATIONS = 300;
     private static final double W = 0.7; // 惯性
     private static final double C1 = 1.5; // 个体加速度
     private static final double C2 = 1.8; // 群体加速度
     private static final List<Double> fitnessLog = new ArrayList<>();
+    private static final List<Double> bestLog = new ArrayList<>();
 
     public static Shelf solve(int shelfLength, List<Item> items) {
         fitnessLog.clear(); // 初始化迭代日志
@@ -53,7 +58,7 @@ public class ParticleSwarmSolver {
                 updatePosition(particle);
             }
             fitnessLog.add(totalFitness / PARTICLE_COUNT); // 添加日志（群体平均）
-//            fitnessLog.add(globalBestFitness); // 添加日志（最优）
+            bestLog.add(globalBestFitness); // 添加日志（最优）
         }
         return SolutionDecoder.decode(Objects.requireNonNull(globalBestPosition), shelfLength, items);
     }
@@ -127,4 +132,8 @@ public class ParticleSwarmSolver {
     public static List<Double> getFitnessLog() {
         return fitnessLog;
     }
-}    
+
+    public static List<Double> getBestLog() {
+        return bestLog;
+    }
+}

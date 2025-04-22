@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class GreedySolver {
+public class DecreaseSolver {
     public static Shelf solve(int shelfLength, List<Item> items) {
         List<Item> sortedItems = new ArrayList<>(items);
         sortedItems.sort(Comparator.comparingInt(Item::getLength).reversed()); // 贪心算法为从大到小排列
